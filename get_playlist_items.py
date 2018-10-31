@@ -3,7 +3,7 @@
 import os
 import json
 import csv
-
+import settings
 import google.oauth2.credentials
 
 import google_auth_oauthlib.flow
@@ -98,7 +98,11 @@ if __name__ == '__main__':
   os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
   client = get_authenticated_service()
 
-  playlist_id = settings.get(playlist_id, None)
+  playlist_id = settings.playlist_id
+
+  with open('parsed_data.csv', mode='a') as parsed_data:
+    data_writer = csv.writer(parsed_data, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    data_writer.writerow(['title', 'description', 'short_url', 'long_youtube_id', 'first_name', 'candidate', 'city'])
   
   if playlist_id:
     page_token = 'AAAAAA'
@@ -114,7 +118,7 @@ if __name__ == '__main__':
           maxResults=50,
           playlistId=playlist_id,
           pageToken=page_token)
-      page_token = parse_data(data,False)
+      page_token = parse_data(data)
   else:
     print("Set playlist_id in settings.py")
 
